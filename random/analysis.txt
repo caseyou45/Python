@@ -1,0 +1,27 @@
+Analysis was successful. The process created 470 random numbers with this distrubution:
+
+Random Number (rounded) : Amount
+0 : 0
+1 : 146
+2 : 117
+3 : 81
+4 : 38
+5 : 26
+6 : 17
+7 : 17
+8 : 13
+
+
+This can be comapred with Python's pseudo randint function. For the same amount of numbers,
+ it created numbers with this distribution: 
+
+Randint : Amount
+0 : 46
+1 : 37
+2 : 57
+3 : 52
+4 : 48
+5 : 48
+6 : 54
+7 : 49
+8 : 43

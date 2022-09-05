@@ -1,12 +1,8 @@
-from inspect import currentframe
-from msvcrt import getch
+from random import randint
 import pafy
 import cv2
-import os
-from PIL import Image
-from io import BytesIO
-import numpy as np
-from FileHandler import *
+import FileHandler
+from AnalysisClass import Analysis
 
 frameCount = 0
 
@@ -18,7 +14,7 @@ def getChoice():
         try:
 
             choice = int(
-                input("Choose generation method: 1) Jellyfish Percentage 0) Quit : "))
+                input("\n1) Jellyfish Percentage \n0) Quit \n\nChoose generation method:"))
 
             if choice < 0:
                 print("Not a valid choice")
@@ -39,10 +35,11 @@ def fetchCapture(url):
     return capture
 
 
-def youtubeCapture():
+def jellyFishMethod():
     global frameCount
+    analyze = Analysis()
 
-    randomNumbers = []
+    FileHandler.createFolder()
 
     success = True
 
@@ -57,33 +54,29 @@ def youtubeCapture():
 
         for x in range(0, xWidth, 2):
             redCount = 0
-            blueCount = 0
 
             for y in range(0, yWidth, 2):
                 b = frame[x, y, 0]
                 g = frame[x, y, 1]
                 r = frame[x, y, 2]
-
                 # if it's somewhat red (jellyfish!), increment redCount and re-color jelly for display purposes
                 if r > 50:
                     redCount += 1
                     frame[x, y, 0] = 255
                     frame[x, y, 1] = 255
                     frame[x, y, 2] = 255
-                # if it is not somewhat red, then it's likely water or not-as-red jellyfish parts, so increment blue
-                elif b > 50:
-                    blueCount += 1
-
             if redCount > 0:
-                randomNumbers.append(sanitizeResult(redCount, yWidth/2))
-            else:
-                randomNumbers.append(sanitizeResult(blueCount, yWidth/2))
+                analyze.addTrueRandomNumbers(
+                    sanitizeResult(redCount, yWidth/2))
+                analyze.addPseudoRandomNumber(randint(0, 9))
 
-        saveImage(frame, frameCount)
+        FileHandler.saveImage(frame, frameCount)
 
         frameCount += 1
 
-        saveNumberFile(randomNumbers)
+        FileHandler.saveNumberFile(analyze.getTrueRandomNumbers())
+
+        analyze.formatAnalysisDocument()
 
 
 def sanitizeResult(count, width):
@@ -95,21 +88,19 @@ def sanitizeResult(count, width):
     if num > 0:
         num /= 10
 
-    if num != 0 and num != 0.1:
-        return num
+    return num
 
 
 def main():
 
     global frameCount
 
-    createFolder()
-
     choice = getChoice()
+
     while choice != 0:
 
         if choice == 1:
-            youtubeCapture()
+            jellyFishMethod()
 
         choice = getChoice()
 
