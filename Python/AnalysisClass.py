@@ -59,13 +59,13 @@ class Analysis:
             " random numbers with this distrubution:\n"
 
         message += "\nRandom Number (rounded) : Amount\n"
-        for i in range(9):
+        for i in range(10):
             message += str(i) + " : " + str(self._trueRandomDict[i]) + "\n"
 
         message += "\n\nThis can be comapred with Python's pseudo randint function. For the same amount of numbers,\n it created numbers with this distribution: \n"
 
         message += "\nRandint : Amount\n"
-        for i in range(9):
+        for i in range(10):
             message += str(i) + " : " + str(self._pseudoRandomDict[i]) + "\n"
 
         saveTextFile(message)
