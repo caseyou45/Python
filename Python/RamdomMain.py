@@ -1,13 +1,11 @@
+from operator import truediv
 from random import randint
 import pafy
 import cv2
 import FileHandler
 from AnalysisClass import Analysis
-from PIL import Image
-import requests
-import math
-from io import BytesIO
-#from bs4 import BeautifulSoup
+from PIL import ImageChops
+# from bs4 import BeautifulSoup
 from urllib.request import urlopen
 
 
@@ -18,7 +16,7 @@ def getChoice():
         try:
 
             choice = int(
-                input("\n1) Jellyfish Method \n0) Quit \n\nChoose generation method: "))
+                input("\n1) Monterey Bay Jellyfish  \n2) Tokyo-Shinjuku Street  \n0) Quit \n\nChoose generation method: "))
 
             if choice < 0:
                 print("Not a valid choice")
@@ -37,32 +35,6 @@ def fetchCapture(url):
     capture = cv2.VideoCapture(best.url)
 
     return capture
-
-
-def lightningMethod():
-
-    response = requests.get(
-        "https://cdn.star.nesdis.noaa.gov/GOES16/GLM/CONUS/EXTENT3/1250x750.jpg")
-    img = Image.open(BytesIO(response.content))
-    pix = img.load()
-    width = img.size[0] - 20
-    height = img.size[1] - 20
-
-    for x in range(0, width):
-        for y in range(0, height):
-            r, g, b = pix[x, y]
-
-            if r > 200 and g < 70 and b < 70:
-                createBlueBox(x, y, pix)
-
-
-def createBlueBox(x, y, pix):
-    for i in range(x - 5, x + 5):
-        pix[i,  y + 5] = (0, 0, 255)
-        pix[i,  y - 5] = (0, 0, 255)
-    for i in range(y - 5, y + 5):
-        pix[x + 5,  i] = (0, 0, 255)
-        pix[x - 5,  i] = (0, 0, 255)
 
 
 def jellyFishMethod():
@@ -84,7 +56,7 @@ def jellyFishMethod():
         success, frame = capture.read()
 
         xWidth = frame.shape[0]
-        yWidth = frame.shape[1]
+        yHeight = frame.shape[1]
 
         count = 0
         section = 0
@@ -97,7 +69,7 @@ def jellyFishMethod():
 
             count += 1
 
-            for y in range(0, yWidth, 2):
+            for y in range(0, yHeight, 2):
                 # b = frame[x, y, 0]
                 # g = frame[x, y, 1]
                 r = frame[x, y, 2]
@@ -123,6 +95,85 @@ def jellyFishMethod():
     analyze.formatAnalysisDocument()
 
 
+def liveCamGeneral(url):
+
+    image = 0
+
+    differenceAmount = .3
+
+    frameCount = int(input("How many frames of the video should we analyze? "))
+
+    analyze = Analysis()
+
+    FileHandler.createFolder()
+
+    success = True
+
+    capture = fetchCapture(url)
+
+    success, base = capture.read()
+
+    while success and image < frameCount:
+
+        count = 0
+        section = 0
+
+        success, frame = capture.read()
+
+        alter = frame
+
+        xWidth = frame.shape[0]
+        yHeight = frame.shape[1]
+
+        for x in range(0, xWidth, 2):
+            # This splits each picture in to 9 sections
+            if count == 54:
+                section += 1
+                count = 0
+
+            count += 1
+            for y in range(0, yHeight, 2):
+                b = frame[x, y, 0]
+                g = frame[x, y, 1]
+                r = frame[x, y, 2]
+
+                baseB = base[x, y, 0]
+                baseG = base[x, y, 1]
+                baseR = base[x, y, 2]
+
+                if comapreTwoPixel(b, baseB) > differenceAmount:
+                    alter[x, y, 0] = 255
+                    n = (section / 10) + ((b / 255)/10)
+                    analyze.addTrueRandomNumbers(n)
+                    analyze.addPseudoRandomNumber(randint(0, 9))
+
+                if comapreTwoPixel(g, baseG) > differenceAmount:
+                    alter[x, y, 1] = 255
+                    n = (section / 10) + ((g / 255)/10)
+                    analyze.addTrueRandomNumbers(n)
+                    analyze.addPseudoRandomNumber(randint(0, 9))
+
+                if comapreTwoPixel(r, baseR) > differenceAmount:
+                    alter[x, y, 2] = 255
+                    n = (section / 10) + ((r / 255)/10)
+                    analyze.addTrueRandomNumbers(n)
+                    analyze.addPseudoRandomNumber(randint(0, 9))
+
+        base = frame
+
+        FileHandler.saveImage(alter, image)
+        image += 1
+
+    FileHandler.saveNumberFile(analyze.getTrueRandomNumbers())
+
+    analyze.formatAnalysisDocument()
+
+
+def comapreTwoPixel(base, next):
+    difference = (base / 2) - (next / 2)
+    return abs(difference) / (255 / 2)
+
+
 def main():
 
     choice = getChoice()
@@ -131,6 +182,9 @@ def main():
 
         if choice == 1:
             jellyFishMethod()
+
+        if choice == 2:
+            liveCamGeneral("https://www.youtube.com/watch?v=RQA5RcIZlAM")
 
         choice = getChoice()
 
