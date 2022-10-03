@@ -2,6 +2,7 @@ from random import randint
 import pafy
 import cv2
 import FileHandler
+import time
 from AnalysisClass import Analysis
 
 
@@ -51,6 +52,8 @@ def jellyFishMethod():
 
     capture = fetchCapture("https://www.youtube.com/watch?v=pT9_HJr-nso")
 
+    createNumberTool = memoCreateRamdomNumber(createRandomNumber)
+
     while success and image < frameCount:
 
         success, frame = capture.read()
@@ -81,7 +84,8 @@ def jellyFishMethod():
                     frame[x, y, 0] = 255
                     frame[x, y, 1] = 255
                     frame[x, y, 2] = 255
-                    n = (section / 10) + ((r / 255)/10)
+
+                    n = createNumberTool(section, r)
 
                     analyze.addTrueRandomNumbers(n)
                     analyze.addPseudoRandomNumber(randint(0, 9))
@@ -92,6 +96,10 @@ def jellyFishMethod():
     FileHandler.saveNumberFile(analyze.getTrueRandomNumbers())
 
     analyze.formatAnalysisDocument()
+
+
+total = 0
+avoided = 0
 
 
 def liveCamGeneral(url):
@@ -114,6 +122,11 @@ def liveCamGeneral(url):
     capture = fetchCapture(url)
 
     success, base = capture.read()
+
+    comaparisonTool = memoCompareTwoPixels(comapreTwoPixels)
+    createNumberTool = memoCreateRamdomNumber(createRandomNumber)
+
+    start = time.time()
 
     while success and image < frameCount:
 
@@ -144,26 +157,28 @@ def liveCamGeneral(url):
 
                 # These three if statements determine how much each pixel varies between two frames.
                 # If the variance is great enough, basically, the difference is saved.
-                if comapreTwoPixel(b, baseB) > differenceAmount:
+                if comaparisonTool(b, baseB) > differenceAmount:
                     # Alter the pixel to denote difference was found
                     alter[x, y, 0] = 255
                     # Create number by adding our section number to the % of the pixels b, g, or r value
-                    #Sample : .9       +   (220/255) /10
+                    # Sample : .9       +   (220/255) /10
                     # This would be .9  +   .0852
                     # The result is .9852
-                    n = (section / 10) + ((b / 255)/10)
+                    n = createNumberTool(section, b)
                     analyze.addTrueRandomNumbers(n)
                     analyze.addPseudoRandomNumber(randint(0, 9))
 
-                if comapreTwoPixel(g, baseG) > differenceAmount:
+                if comaparisonTool(g, baseG) > differenceAmount:
                     alter[x, y, 1] = 255
-                    n = (section / 10) + ((g / 255)/10)
+
+                    n = createNumberTool(section, g)
                     analyze.addTrueRandomNumbers(n)
                     analyze.addPseudoRandomNumber(randint(0, 9))
 
-                if comapreTwoPixel(r, baseR) > differenceAmount:
+                if comaparisonTool(r, baseR) > differenceAmount:
                     alter[x, y, 2] = 255
-                    n = (section / 10) + ((r / 255)/10)
+
+                    n = createNumberTool(section, r)
                     analyze.addTrueRandomNumbers(n)
                     analyze.addPseudoRandomNumber(randint(0, 9))
 
@@ -176,6 +191,32 @@ def liveCamGeneral(url):
 
     analyze.formatAnalysisDocument()
 
+    end = time.time()
+    print("Time taken: " + str(end - start))
+
+
+def memoCreateRamdomNumber(f):
+    """Implements memoization for the random number function"""
+
+    memo = {}
+
+    def helper(section, rgbValue):
+        global total, avoided
+
+        strOfInputs = str(section) + str(rgbValue)
+
+        if strOfInputs not in memo:
+            memo[strOfInputs] = f(section, rgbValue)
+
+        return memo[strOfInputs]
+
+    return helper
+
+
+def createRandomNumber(section, rgbValue):
+    """Adds the section to the rgb value as a percentage"""
+    return (section / 10) + ((rgbValue / 255)/10)
+
 
 def getDesiredSensitivity():
     differenceAmount = -1
@@ -187,11 +228,30 @@ def getDesiredSensitivity():
     return differenceAmount
 
 
-def comapreTwoPixel(base, next):
+def memoCompareTwoPixels(f):
+    """Implements memoization for the pixel comparision function"""
+    memo = {}
+
+    def helper(base, next):
+
+        strOfInputs = str(base) + str(next)
+
+        if strOfInputs not in memo:
+            memo[strOfInputs] = f(base, next)
+
+        return memo[strOfInputs]
+
+    return helper
+
+
+def comapreTwoPixels(base, next):
     """Returns the difference between two values (0-255). Because of how the number is 
     stored, the value is halved."""
+
     difference = (base / 2) - (next / 2)
-    return abs(difference) / (255 / 2)
+    num = abs(difference) / (255 / 2)
+
+    return num
 
 
 def main():

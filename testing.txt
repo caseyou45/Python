@@ -1,0 +1,55 @@
+Street with 5 images at .5 sensitivity with Memo on Pixel Compare
+
+Total Requests: 7776000
+Requests Avoided 7753531
+Time taken: 15.798242568969727
+
+
+Total Requests: 15552000
+Requests Avoided 15510839
+Time taken: 15.461751699447632
+
+
+Total Requests: 23328000
+Requests Avoided 23265615
+Time taken: 20.14649510383606
+
+
+Total Requests: 31104000
+Requests Avoided 31016865
+Time taken: 15.63396430015564
+
+_____________________________________________________________________
+Without Memo on Pixel Compare
+Total Requests: 0
+Requests Avoided 0
+Time taken: 35.676246881484985
+
+
+Total Requests: 0
+Requests Avoided 0
+Time taken: 36.802247762680054
+
+
+Total Requests: 0
+Requests Avoided 0
+Time taken: 38.900768995285034
+
+
+Total Requests: 0
+Requests Avoided 0
+Time taken: 42.98841667175293
+
+
+_____________________________________________________________________
+
+And with the Number Creator Memo 
+
+Total Requests: 13836
+Requests Avoided 12017
+Time taken: 14.408670663833618
+
+
+Total Requests: 14024
+Requests Avoided 12083
+Time taken: 14.51068377494812
