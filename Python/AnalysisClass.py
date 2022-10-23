@@ -1,5 +1,6 @@
 from math import floor
 from random import randint
+from typing import Dict, List
 from FileHandler import saveTextFile
 
 
@@ -15,45 +16,45 @@ class Analysis:
         self.setPseudoRandomDict(pseudoRandomDict)
         self._error = ""
 
-    def addPseudoRandomNumber(self, number):
+    def addPseudoRandomNumber(self, number: int):
         self._pseudoRandomNumbers.append(number)
 
-    def setPseudoRandomNumbers(self, numbers):
+    def setPseudoRandomNumbers(self, numbers: List[int]):
         self._pseudoRandomNumbers = numbers
 
-    def addTrueRandomNumbers(self, number):
+    def addTrueRandomNumbers(self, number: int):
         self._trueRandomNumbers.append(number)
 
-    def setTrueRandomNumbers(self, numbers):
+    def setTrueRandomNumbers(self, numbers: List[float]):
         self._trueRandomNumbers = numbers
 
-    def getTrueRandomNumbers(self):
+    def getTrueRandomNumbers(self) -> List[float]:
         return self._trueRandomNumbers
 
-    def modifyTrueRandomDict(self):
+    def tabulateTrueRandomDict(self):
         for i in range(0, len(self._trueRandomNumbers)):
             n = floor(self._trueRandomNumbers[i] * 10)
             self._trueRandomDict[n] += 1
 
-    def setTrueRandomDict(self, dict):
+    def setTrueRandomDict(self, dict: Dict[int, int]):
         self._trueRandomDict = dict
 
-    def modifyPseudoRandomDict(self):
+    def tabulatePseudoRandomDict(self):
         for i in range(0, len(self._pseudoRandomNumbers)):
             self._pseudoRandomDict[self._pseudoRandomNumbers[i]] += 1
 
-    def setPseudoRandomDict(self, dict):
+    def setPseudoRandomDict(self, dict: Dict[int, int]):
         self._pseudoRandomDict = dict
 
-    def getTrueRandomAverage(self):
+    def getTrueRandomAverage(self) -> float:
         return sum(self._trueRandomNumbers) / len(self._trueRandomNumbers)
 
-    def getPseudoRandomAverage(self):
+    def getPseudoRandomAverage(self) -> float:
         return sum(self._pseudoRandomNumbers) / len(self._pseudoRandomNumbers)
 
     def formatAnalysisDocument(self):
-        self.modifyPseudoRandomDict()
-        self.modifyTrueRandomDict()
+        self.tabulatePseudoRandomDict()
+        self.tabulateTrueRandomDict()
         message = "Analysis was successful. The process created " + \
             str(len(self._trueRandomNumbers)) + \
             " random numbers with this distrubution:\n"

@@ -4,9 +4,10 @@ import cv2
 import FileHandler
 import time
 from AnalysisClass import Analysis
+from typing import Any
 
 
-def getChoice():
+def getChoice() -> int:
     """Prompts users to choose an options and returns that numerical value"""
     choice = -1
 
@@ -25,7 +26,7 @@ def getChoice():
     return choice
 
 
-def fetchCapture(url):
+def fetchCapture(url: str):
     """Uses pafy to obtain the video from the URL. Then uses OpenCV to capture it."""
 
     video = pafy.new(url)
@@ -102,7 +103,7 @@ total = 0
 avoided = 0
 
 
-def liveCamGeneral(url):
+def liveCamGeneral(url: str):
     """A more general apporach to create random numbers from different videos. This simply compares
     two seperate frames."""
 
@@ -195,7 +196,7 @@ def liveCamGeneral(url):
     print("Time taken: " + str(end - start))
 
 
-def memoCreateRamdomNumber(f):
+def memoCreateRamdomNumber(f: Any) -> Any:
     """Implements memoization for the random number function"""
 
     memo = {}
@@ -213,12 +214,12 @@ def memoCreateRamdomNumber(f):
     return helper
 
 
-def createRandomNumber(section, rgbValue):
+def createRandomNumber(section: int, rgbValue: int) -> float:
     """Adds the section to the rgb value as a percentage"""
     return (section / 10) + ((rgbValue / 255)/10)
 
 
-def getDesiredSensitivity():
+def getDesiredSensitivity() -> float:
     differenceAmount = -1
 
     while differenceAmount < 0 or differenceAmount > 1:
@@ -228,7 +229,7 @@ def getDesiredSensitivity():
     return differenceAmount
 
 
-def memoCompareTwoPixels(f):
+def memoCompareTwoPixels(f: Any) -> Any:
     """Implements memoization for the pixel comparision function"""
     memo = {}
 
@@ -244,7 +245,7 @@ def memoCompareTwoPixels(f):
     return helper
 
 
-def comapreTwoPixels(base, next):
+def comapreTwoPixels(base: int, next: int) -> float:
     """Returns the difference between two values (0-255). Because of how the number is 
     stored, the value is halved."""
 

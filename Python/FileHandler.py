@@ -1,5 +1,6 @@
 import cv2
 import os
+from typing import Any, List
 
 
 def createFolder():
@@ -12,7 +13,7 @@ def createFolder():
     print("...Creating directory 'random' to store information")
 
 
-def saveImage(frame, frameCount):
+def saveImage(frame: Any, frameCount: int):
 
     try:
         name = './random/dataframe' + str(frameCount) + '.jpg'
@@ -23,7 +24,7 @@ def saveImage(frame, frameCount):
         print("Error: Something happened making " + name)
 
 
-def saveNumberFile(numbers):
+def saveNumberFile(numbers: List[float]):
     print("...Saving txt file 'numbers,' which contains the random numbers")
 
     try:
@@ -35,7 +36,7 @@ def saveNumberFile(numbers):
         print("The 'random' directory does not exist")
 
 
-def saveTextFile(message):
+def saveTextFile(message: str):
     print("...Saving txt file 'analysis,' which explores the numbers generated")
 
     try:
