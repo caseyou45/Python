@@ -1,29 +1,29 @@
-Analysis was successful. The process created 243090 random numbers with this distrubution:
+Analysis was successful. The process created 365535 random numbers with this distrubution:
 
 Random Number (rounded) : Amount
-0 : 2896
-1 : 8017
-2 : 12261
-3 : 14652
-4 : 15344
-5 : 19406
-6 : 26448
-7 : 36941
-8 : 45300
-9 : 61825
+0 : 47961
+1 : 89582
+2 : 123542
+3 : 133896
+4 : 143634
+5 : 138970
+6 : 98353
+7 : 78025
+8 : 106391
+9 : 104818
 
 
 This can be comapred with Python's pseudo randint function. For the same amount of numbers,
  it created numbers with this distribution: 
 
 Randint : Amount
-0 : 24251
-1 : 24194
-2 : 24366
-3 : 24337
-4 : 24211
-5 : 24340
-6 : 24164
-7 : 24525
-8 : 24186
-9 : 24516
+0 : 106434
+1 : 105831
+2 : 107380
+3 : 106380
+4 : 105857
+5 : 106641
+6 : 106722
+7 : 106992
+8 : 106588
+9 : 106347

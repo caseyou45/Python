@@ -1,4 +1,5 @@
 from random import randint
+from types import NoneType
 import pafy
 import cv2
 import FileHandler
@@ -15,7 +16,7 @@ def getChoice() -> int:
         try:
 
             choice = int(
-                input("\n1) Monterey Bay Jellyfish  \n2) Tokyo-Shinjuku Street  \n0) Quit \n\nChoose generation method: "))
+                input("\n1) Monterey Bay Jellyfish  \n2) Tokyo-Shinjuku Street  \n3) Enter URL \n0) Quit \n\nChoose generation method: "))
 
             if choice < 0:
                 print("Not a valid choice")
@@ -29,10 +30,14 @@ def getChoice() -> int:
 def fetchCapture(url: str):
     """Uses pafy to obtain the video from the URL. Then uses OpenCV to capture it."""
 
-    video = pafy.new(url)
-    best = video.getbest(preftype="mp4")
+    try:
+        video = pafy.new(url)
+        best = video.getbest(preftype="mp4")
 
-    capture = cv2.VideoCapture(best.url)
+        capture = cv2.VideoCapture(best.url)
+
+    except:
+        return NoneType
 
     return capture
 
@@ -55,52 +60,57 @@ def jellyFishMethod():
 
     createNumberTool = memoCreateRamdomNumber(createRandomNumber)
 
+    if capture == NoneType:
+        success = False
+        print("\nSomething went wrong with the video...\n")
+
     while success and image < frameCount:
 
         success, frame = capture.read()
 
-        xWidth = frame.shape[0]
-        yHeight = frame.shape[1]
+        if success == False:
+            print("\nSomething went wrong with the captrue...\n")
 
-        count, section = 0, 0
+        else:
 
-        for x in range(0, xWidth, 2):
-            # This splits each picture in to 9 sections
-            if count == 54:
-                section += 1
-                count = 0
+            xWidth = frame.shape[0]
+            yHeight = frame.shape[1]
 
-            count += 1
+            count, section = 0, 0
 
-            for y in range(0, yHeight, 2):
-                # b = frame[x, y, 0]
-                # g = frame[x, y, 1]
-                r = frame[x, y, 2]
+            for x in range(0, xWidth, 2):
+                # This splits each picture in to 9 sections
+                if count == 54:
+                    section += 1
+                    count = 0
 
-                # If there's enough red (jellyfish!), then this logic is applied:
-                # 1) Create a decimal equivalent of the section we are in (example: 8 = .8)
-                # 2) Then add that value to how much red is in the pixel (32 / 255 == .125 / 10 = .0125)
-                # 3) So the resulting number is based on where the jelly is and how red it appears (.8125)
-                if r > 50:
-                    frame[x, y, 0] = 255
-                    frame[x, y, 1] = 255
-                    frame[x, y, 2] = 255
+                count += 1
 
-                    n = createNumberTool(section, r)
+                for y in range(0, yHeight, 2):
+                    # b = frame[x, y, 0]
+                    # g = frame[x, y, 1]
+                    r = frame[x, y, 2]
 
-                    analyze.addTrueRandomNumbers(n)
-                    analyze.addPseudoRandomNumber(randint(0, 9))
+                    # If there's enough red (jellyfish!), then this logic is applied:
+                    # 1) Create a decimal equivalent of the section we are in (example: 8 = .8)
+                    # 2) Then add that value to how much red is in the pixel (32 / 255 == .125 / 10 = .0125)
+                    # 3) So the resulting number is based on where the jelly is and how red it appears (.8125)
+                    if r > 50:
+                        frame[x, y, 0] = 255
+                        frame[x, y, 1] = 255
+                        frame[x, y, 2] = 255
 
-        FileHandler.saveImage(frame, image)
-        image += 1
+                        n = createNumberTool(section, r)
 
-    FileHandler.saveNumberFile(analyze.getTrueRandomNumbers())
+                        analyze.addTrueRandomNumbers(n)
+                        analyze.addPseudoRandomNumber(randint(0, 9))
 
-    analyze.formatAnalysisDocument()
+            FileHandler.saveImage(frame, image)
+            image += 1
 
-
-total = 0
-avoided = 0
+    if success:
+        FileHandler.saveNumberFile(analyze.getTrueRandomNumbers())
+        analyze.formatAnalysisDocument()
 
 
 def liveCamGeneral(url: str):
@@ -122,12 +132,17 @@ def liveCamGeneral(url: str):
 
     capture = fetchCapture(url)
 
-    success, base = capture.read()
-
+    # Sets up the memoization for methods
     comaparisonTool = memoCompareTwoPixels(comapreTwoPixels)
     createNumberTool = memoCreateRamdomNumber(createRandomNumber)
 
-    start = time.time()
+    if capture == NoneType:
+        success = False
+        print("\nSomething went wrong with the video...\n")
+
+    else:
+        # Since this works by comparing frames. This sets up the "base" frame to start the comparison
+        success, base = capture.read()
 
     while success and image < frameCount:
 
@@ -188,12 +203,9 @@ def liveCamGeneral(url: str):
         FileHandler.saveImage(alter, image)
         image += 1
 
-    FileHandler.saveNumberFile(analyze.getTrueRandomNumbers())
-
-    analyze.formatAnalysisDocument()
-
-    end = time.time()
-    print("Time taken: " + str(end - start))
+    if success:
+        FileHandler.saveNumberFile(analyze.getTrueRandomNumbers())
+        analyze.formatAnalysisDocument()
 
 
 def memoCreateRamdomNumber(f: Any) -> Any:
@@ -202,7 +214,6 @@ def memoCreateRamdomNumber(f: Any) -> Any:
     memo = {}
 
     def helper(section, rgbValue):
-        global total, avoided
 
         strOfInputs = str(section) + str(rgbValue)
 
@@ -255,6 +266,12 @@ def comapreTwoPixels(base: int, next: int) -> float:
     return num
 
 
+def getURLIDFromUser() -> str:
+    url = input(
+        "Enter ID of Youtube URL of livestream for analysis: ")
+    return url
+
+
 def main():
 
     choice = getChoice()
@@ -266,6 +283,12 @@ def main():
 
         if choice == 2:
             liveCamGeneral("https://www.youtube.com/watch?v=RQA5RcIZlAM")
+
+        if choice == 3:
+            urlIDFromUser = getURLIDFromUser()
+            urlIDFromUser = "https://www.youtube.com/watch?v=" + urlIDFromUser
+            print(urlIDFromUser)
+            liveCamGeneral(urlIDFromUser)
 
         choice = getChoice()
 
