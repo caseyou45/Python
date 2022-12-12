@@ -16,6 +16,15 @@ class Analysis:
         self.setPseudoRandomDict(pseudoRandomDict)
         self._error = ""
 
+    def fullResetOfValues(self):
+        '''Reset everything to init values'''
+        self._trueRandomDict = self._trueRandomDict.fromkeys(
+            self._trueRandomDict, 0)
+        self._pseudoRandomDict = self._pseudoRandomDict.fromkeys(
+            self._pseudoRandomDict, 0)
+        self._pseudoRandomNumbers.clear()
+        self._trueRandomNumbers.clear()
+
     def addPseudoRandomNumber(self, number: int):
         self._pseudoRandomNumbers.append(number)
 

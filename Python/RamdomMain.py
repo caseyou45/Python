@@ -3,20 +3,19 @@ from types import NoneType
 import pafy
 import cv2
 import FileHandler
-import time
 from AnalysisClass import Analysis
 from typing import Any
 
 
 def getChoice() -> int:
-    """Prompts users to choose an options and returns that numerical value"""
+    """Prompts users to choose an options and returns that numerical value. """
     choice = -1
 
     while choice < 0:
         try:
 
             choice = int(
-                input("\n1) Monterey Bay Jellyfish  \n2) Tokyo-Shinjuku Street  \n3) Enter URL \n0) Quit \n\nChoose generation method: "))
+                input("\n1) Monterey Bay Jellyfish  \n2) Tokyo-Shinjuku Street  \n3) Enter URL \n4) Reset Saved Numbers\n0) Quit \n\nChoose generation method: "))
 
             if choice < 0:
                 print("Not a valid choice")
@@ -42,17 +41,12 @@ def fetchCapture(url: str):
     return capture
 
 
-def jellyFishMethod():
+def jellyFishMethod(analyze: Analysis):
     """Actually performs the analysis of the video to create the package for the users.
     It calls all neccesary functions."""
 
-    image = 0
-
     frameCount = int(input("How many frames of the video should we analyze? "))
-
-    analyze = Analysis()
-
-    FileHandler.createFolder()
+    imageCount = 0
 
     success = True
 
@@ -60,11 +54,13 @@ def jellyFishMethod():
 
     createNumberTool = memoCreateRamdomNumber(createRandomNumber)
 
+    FileHandler.createFolder()
+
     if capture == NoneType:
         success = False
         print("\nSomething went wrong with the video...\n")
 
-    while success and image < frameCount:
+    while success and imageCount < frameCount:
 
         success, frame = capture.read()
 
@@ -105,26 +101,23 @@ def jellyFishMethod():
                         analyze.addTrueRandomNumbers(n)
                         analyze.addPseudoRandomNumber(randint(0, 9))
 
-            FileHandler.saveImage(frame, image)
-            image += 1
+            FileHandler.saveImage(frame, imageCount)
+            imageCount += 1
 
     if success:
         FileHandler.saveNumberFile(analyze.getTrueRandomNumbers())
         analyze.formatAnalysisDocument()
 
 
-def liveCamGeneral(url: str):
+def liveCamGeneral(url: str, analyze: Analysis):
     """A more general apporach to create random numbers from different videos. This simply compares
-    two seperate frames."""
-
-    image = 0
+    two seperate frames. Randomness, then, is driven by how much the frames have changed."""
 
     differenceAmount = .3
+    imageCount = 0
 
     frameCount = int(input("How many frames of the video should we analyze? "))
     differenceAmount = getDesiredSensitivity()
-
-    analyze = Analysis()
 
     FileHandler.createFolder()
 
@@ -144,7 +137,7 @@ def liveCamGeneral(url: str):
         # Since this works by comparing frames. This sets up the "base" frame to start the comparison
         success, base = capture.read()
 
-    while success and image < frameCount:
+    while success and imageCount < frameCount:
 
         count, section = 0, 0
 
@@ -200,8 +193,8 @@ def liveCamGeneral(url: str):
 
         base = frame
 
-        FileHandler.saveImage(alter, image)
-        image += 1
+        FileHandler.saveImage(alter, imageCount)
+        imageCount += 1
 
     if success:
         FileHandler.saveNumberFile(analyze.getTrueRandomNumbers())
@@ -273,22 +266,28 @@ def getURLIDFromUser() -> str:
 
 
 def main():
+    """Main method to handle choices. Analysis object is created to be passed to methods."""
+    analyze = Analysis()
 
+    # Counter for number of images analyzed
     choice = getChoice()
 
     while choice != 0:
 
         if choice == 1:
-            jellyFishMethod()
+            jellyFishMethod(analyze)
 
         if choice == 2:
-            liveCamGeneral("https://www.youtube.com/watch?v=RQA5RcIZlAM")
+            liveCamGeneral(
+                "https://www.youtube.com/watch?v=RQA5RcIZlAM", analyze)
 
         if choice == 3:
             urlIDFromUser = getURLIDFromUser()
             urlIDFromUser = "https://www.youtube.com/watch?v=" + urlIDFromUser
-            print(urlIDFromUser)
-            liveCamGeneral(urlIDFromUser)
+            liveCamGeneral(urlIDFromUser, analyze)
+
+        if choice == 4:
+            analyze.fullResetOfValues()
 
         choice = getChoice()
 

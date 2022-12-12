@@ -1,3 +1,5 @@
+# undeveloped idea to generate randomness from lightning strikes in the continental US
+
 def lightningMethod():
 
     response = requests.get(
