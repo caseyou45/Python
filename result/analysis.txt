@@ -1,0 +1,29 @@
+Analysis was successful. The process created 48651 random numbers with this distrubution:
+
+Random Number (rounded) : Amount
+0 : 5010
+1 : 2957
+2 : 9715
+3 : 1773
+4 : 226
+5 : 1148
+6 : 3077
+7 : 5430
+8 : 7192
+9 : 12123
+
+
+This can be comapred with Python's pseudo randint function. For the same amount of numbers,
+ it created numbers with this distribution: 
+
+Randint : Amount
+0 : 4898
+1 : 4962
+2 : 4961
+3 : 4873
+4 : 4786
+5 : 4869
+6 : 4850
+7 : 4819
+8 : 4795
+9 : 4838
